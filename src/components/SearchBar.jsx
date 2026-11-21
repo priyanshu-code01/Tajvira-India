@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MapPin, Footprints, Bike, Clock3, ChevronDown } from "lucide-react";
 
-// Custom Dropdown Component
+// Custom Dropdown
 const CustomDropdown = ({
   icon: Icon,
   placeholder,
@@ -25,13 +25,13 @@ const CustomDropdown = ({
         }
       }}
     >
-      {/* Dropdown Trigger */}
+      {/* Dropdown Button */}
       <button
         type="button"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
         className="
-          flex h-[50px] w-full
+          flex h-12.5 w-full
           items-center justify-between
           rounded-[11px]
           border border-[#d5e2ce]
@@ -64,12 +64,12 @@ const CustomDropdown = ({
         />
       </button>
 
-      {/* Custom Dropdown Menu */}
+      {/* Dropdown Menu */}
       <div
         className={`
-          absolute left-0 bottom-full z-[100]
-mb-2 w-full
-origin-bottom
+          absolute left-0 bottom-full z-100
+          mb-2 w-full
+          origin-bottom
           transition-all duration-200 ease-out
           ${
             open
@@ -84,7 +84,7 @@ origin-bottom
             rounded-[13px]
             border border-gray-100
             bg-white
-            p-[10px]
+            p-2.5
             shadow-[0_12px_35px_rgba(0,0,0,0.15)]
           "
         >
@@ -94,8 +94,8 @@ origin-bottom
               type="button"
               onClick={() => handleSelect(option)}
               className={`
-                my-[3px]
-                flex min-h-[44px]
+                my-0.75
+                flex min-h-11
                 w-full items-center
                 rounded-[10px]
                 px-4 py-3
@@ -153,21 +153,22 @@ Please share available tour packages.`;
       onSubmit={handleSearch}
       className="
         mx-auto grid w-full
-        max-w-[1380px]
+        max-w-345
         grid-cols-1
         gap-3
         rounded-xl
         bg-white
-        p-5
+        p-3 py-4
         shadow-2xl
         sm:grid-cols-2
-        sm:gap-3
-        sm:p-7
+        sm:gap-4
+        sm:p-5
+        md:p-6
         lg:grid-cols-2
         lg:p-9
         xl:grid-cols-[repeat(4,minmax(0,1fr))_120px]
         xl:items-center
-        xl:gap-[10px]
+        xl:gap-2.5
         xl:px-11
         xl:py-11
       "
@@ -218,7 +219,7 @@ Please share available tour packages.`;
       <button
         type="submit"
         className="
-          flex h-[50px] w-full
+          flex h-12.5 w-full
           items-center justify-center
           rounded-[11px]
           bg-[#df3044]

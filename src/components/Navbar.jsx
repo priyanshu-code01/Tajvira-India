@@ -1,45 +1,56 @@
 import { useState } from "react";
+
 import { Menu, X, ChevronDown } from "lucide-react";
 
-// Detect mouse entry direction
-const getHoverOrigin = (e) => {
+// Get mouse position for hover animation
+const getHoverPosition = (e) => {
   const rect = e.currentTarget.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
 
-  const distances = [
-    { side: "left", value: x },
-    { side: "right", value: rect.width - x },
-    { side: "top", value: y },
-    { side: "bottom", value: rect.height - y },
-  ];
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
 
-  const nearest = distances.reduce((a, b) => (a.value < b.value ? a : b));
-
-  const origins = {
-    left: "left center",
-    right: "right center",
-    top: "center top",
-    bottom: "center bottom",
-  };
-
-  return origins[nearest.side];
+  return { x, y };
 };
 
-// Plan My Trip button with directional red hover
+// Plan My Trip button
 const PlanMyTripButton = () => {
-  const [origin, setOrigin] = useState("left center");
+  const [position, setPosition] = useState({
+    x: 50,
+    y: 50,
+  });
 
   return (
     <a
       href="#trip-search"
-      onMouseEnter={(e) => setOrigin(getHoverOrigin(e))}
-      className="group relative isolate inline-flex h-11 min-w-[140px] items-center justify-center overflow-hidden rounded-full border border-white/90 px-5 text-sm font-medium text-white transition-colors duration-300 hover:border-[#df3044] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+      onMouseEnter={(e) => setPosition(getHoverPosition(e))}
+      className="
+        group relative isolate inline-flex
+        h-11 min-w-35
+        items-center justify-center
+        overflow-hidden rounded-full
+        border border-white/90
+        px-5 text-sm font-medium text-white
+        transition-colors duration-300
+        hover:border-[#df3044]
+        focus-visible:outline-none
+        focus-visible:ring-2
+        focus-visible:ring-white
+        focus-visible:ring-offset-2
+        focus-visible:ring-offset-transparent
+      "
     >
       <span
         aria-hidden="true"
-        className="absolute inset-0 -z-10 scale-0 rounded-full bg-[#df3044] transition-transform duration-300 ease-out group-hover:scale-100"
-        style={{ transformOrigin: origin }}
+        className="
+          absolute inset-0 -z-10
+          scale-0 rounded-full
+          bg-[#df3044]
+          transition-transform duration-500 ease-out
+          group-hover:scale-100
+        "
+        style={{
+          transformOrigin: `${position.x}% ${position.y}%`,
+        }}
       />
 
       <span className="relative z-10 whitespace-nowrap">Plan My Trip</span>
@@ -83,15 +94,15 @@ const Navbar = () => {
 
   return (
     <header className="absolute left-0 top-0 z-50 w-full">
-      {/* Main Navbar */}
+      {/* Navbar */}
       <nav
         className="
           relative mx-auto grid
-          h-[76px] w-full max-w-[1600px]
+          h-19 w-full max-w-[1600px]
           grid-cols-[1fr_auto]
           items-center
-          md:h-[84px]
-          xl:h-[92px]
+          md:h-21
+          xl:h-23
           xl:grid-cols-[190px_minmax(0,1fr)_150px]
         "
         style={{
@@ -104,7 +115,7 @@ const Navbar = () => {
           href="#home"
           className="
             relative z-10 flex w-fit
-            max-w-[190px]
+            max-w-47.5
             flex-col justify-center
             leading-none
           "
@@ -135,7 +146,7 @@ const Navbar = () => {
           </span>
         </a>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Menu */}
         <div
           className="
             hidden items-center justify-center
@@ -148,7 +159,7 @@ const Navbar = () => {
             <div key={link.name} className="group relative">
               {link.children ? (
                 <>
-                  {/* Dropdown Trigger */}
+                  {/* Dropdown Button */}
                   <button
                     type="button"
                     aria-haspopup="true"
@@ -176,19 +187,19 @@ const Navbar = () => {
                     />
                   </button>
 
-                  {/* Modern Dropdown Menu */}
+                  {/* Dropdown Menu */}
                   <div
                     className="
-    invisible absolute left-0 top-full
-    z-50 translate-y-2 opacity-0
-    transition-all duration-200 ease-out
-    group-hover:visible
-    group-hover:translate-y-0
-    group-hover:opacity-100
-    group-focus-within:visible
-    group-focus-within:translate-y-0
-    group-focus-within:opacity-100
-  "
+                      invisible absolute left-0 top-full
+                      z-50 translate-y-2 opacity-0
+                      transition-all duration-200 ease-out
+                      group-hover:visible
+                      group-hover:translate-y-0
+                      group-hover:opacity-100
+                      group-focus-within:visible
+                      group-focus-within:translate-y-0
+                      group-focus-within:opacity-100
+                    "
                     style={{
                       width: "260px",
                       paddingTop: "12px",
@@ -265,12 +276,12 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Desktop Plan My Trip */}
+        {/* Plan My Trip */}
         <div className="hidden justify-end xl:flex">
           <PlanMyTripButton />
         </div>
 
-        {/* Mobile Menu Toggle */}
+        {/* Mobile Menu Button */}
         <button
           type="button"
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -290,7 +301,7 @@ const Navbar = () => {
         </button>
       </nav>
 
-      {/* Mobile & Tablet Menu */}
+      {/* Mobile Menu */}
       {mobileOpen && (
         <div
           className="
@@ -304,7 +315,7 @@ const Navbar = () => {
           <div
             className="
               mx-auto max-h-[75vh]
-              max-w-[600px]
+              max-w-150
               overflow-y-auto
               rounded-xl border border-gray-100
               bg-white p-4
@@ -371,7 +382,7 @@ const Navbar = () => {
               </div>
             ))}
 
-            {/* Mobile CTA */}
+            {/* Mobile Plan My Trip */}
             <a
               href="#trip-search"
               onClick={closeMobileMenu}

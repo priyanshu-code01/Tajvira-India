@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { MessageCircleMore } from "lucide-react";
+import { motion } from "motion/react";
 
 import SearchBar from "./SearchBar";
 
@@ -33,32 +34,19 @@ const Hero = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Our Services Button Animation
-  const [buttonOrigin, setButtonOrigin] = useState("left center");
+  // Button Hover Position
+  const [buttonPosition, setButtonPosition] = useState({
+    x: 50,
+    y: 50,
+  });
 
-  const getButtonOrigin = (e) => {
+  const getButtonPosition = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
 
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
 
-    const distances = [
-      { side: "left", value: x },
-      { side: "right", value: rect.width - x },
-      { side: "top", value: y },
-      { side: "bottom", value: rect.height - y },
-    ];
-
-    const nearest = distances.reduce((a, b) => (a.value < b.value ? a : b));
-
-    const origins = {
-      left: "left center",
-      right: "right center",
-      top: "center top",
-      bottom: "center bottom",
-    };
-
-    return origins[nearest.side];
+    setButtonPosition({ x, y });
   };
 
   return (
@@ -86,7 +74,7 @@ const Hero = () => {
       ))}
 
       {/* Background Overlay */}
-      <div className="absolute inset-0 z-[1] bg-black/40" />
+      <div className="absolute inset-0 z-1 bg-black/40" />
 
       {/* Hero Content */}
       <div
@@ -96,11 +84,12 @@ const Hero = () => {
           flex-col items-center
           justify-center
           px-4
-          pt-28 pb-48
-          text-center
-          sm:px-6
+          pt-0 pb-70
+          -translate-y-16
+          sm:px-6 sm:-translate-y-20
           md:px-8 md:pt-32 md:pb-52
-          lg:pt-36
+          md:-translate-y-16
+          lg:translate-y-0 lg:pt-36
         "
       >
         {/* Subtitle */}
@@ -126,7 +115,7 @@ const Hero = () => {
         <h1
           className="
             mx-auto w-full
-            max-w-[1450px]
+            max-w-362.5
             text-center
             font-serif font-bold
             text-[clamp(2.2rem,5.2vw,5.25rem)]
@@ -134,22 +123,36 @@ const Hero = () => {
             tracking-[-0.035em]
             text-white
             drop-shadow-lg
-            [text-wrap:balance]
+            text-balance
           "
         >
-          Unveil the True Magic of India
+          {"Unveil the True Magic of India".split("").map((letter, index) => (
+            <motion.span
+              key={index}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{
+                delay: index * 0.055,
+                duration: 0.12,
+                ease: "easeOut",
+              }}
+              className="inline-block whitespace-pre"
+            >
+              {letter}
+            </motion.span>
+          ))}
         </h1>
 
         {/* Our Services Button */}
-        <a
+        <motion.a
           href="#services"
-          onMouseEnter={(e) => setButtonOrigin(getButtonOrigin(e))}
+          onMouseEnter={getButtonPosition}
           className="
             group relative isolate
-            mt-7 sm:mt-8
+            mt-4 sm:mt-8
             inline-flex
-            min-h-[48px] sm:min-h-[52px]
-            min-w-[145px] sm:min-w-[165px]
+            min-h-10 sm:min-h-13
+            min-w-30.25 sm:min-w-41.25
             items-center justify-center
             overflow-hidden
             rounded-full
@@ -166,36 +169,51 @@ const Hero = () => {
             focus-visible:ring-2
             focus-visible:ring-white
           "
+          initial={{ opacity: 0, y: 35 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 1.9,
+            duration: 0.8,
+            ease: [0.22, 1, 0.36, 1],
+          }}
         >
-          {/* White Directional Animation */}
+          {/* Button Hover Animation */}
           <span
             aria-hidden="true"
             className="
               absolute inset-0 -z-10
               scale-0 rounded-full
               bg-white
-              transition-transform duration-300 ease-out
+              transition-transform duration-500 ease-out
               group-hover:scale-100
             "
             style={{
-              transformOrigin: buttonOrigin,
+              transformOrigin: `${buttonPosition.x}% ${buttonPosition.y}%`,
             }}
           />
 
           <span className="relative z-10 whitespace-nowrap">Our Services</span>
-        </a>
+        </motion.a>
       </div>
 
       {/* Search Bar */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: 70 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          delay: 2.85,
+          duration: 1.1,
+          ease: [0.22, 1, 0.36, 1],
+        }}
         className="
-          absolute bottom-16 left-0
+          absolute bottom-45 left-0
           z-20 w-full px-5
-          md:bottom-14
+          sm:bottom-12
+          md:bottom-16
         "
       >
         <SearchBar />
-      </div>
+      </motion.div>
 
       {/* WhatsApp Button */}
       <a
@@ -205,12 +223,12 @@ const Hero = () => {
         aria-label="Chat on WhatsApp"
         className="
           fixed bottom-6 left-6 z-50
-          inline-flex h-[54px]
+          inline-flex h-13.5
           items-center justify-center
           gap-3
           rounded-full
           bg-[#df3044]
-          pl-[6px] pr-5
+          pl-1.5 pr-5
           text-white
           shadow-xl
           transition-transform duration-300
@@ -220,7 +238,7 @@ const Hero = () => {
         {/* WhatsApp Icon */}
         <span
           className="
-            flex h-[42px] w-[42px]
+            flex h-10.5 w-10.5
             shrink-0 items-center justify-center
             rounded-full bg-white
           "
