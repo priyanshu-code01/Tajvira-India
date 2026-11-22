@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { MessageCircleMore } from "lucide-react";
-import { motion } from "motion/react";
-
+import { motion, AnimatePresence } from "motion/react";
 import SearchBar from "./SearchBar";
+
+const easePremium = [0.22, 1, 0.36, 1];
 
 const heroImages = [
   "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=2200&q=90",
@@ -12,8 +13,17 @@ const heroImages = [
   "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=2200&q=90",
 ];
 
+// Hero Headings
+const heroHeadings = [
+  "Unveil the True Magic of India",
+  "Discover India's Timeless Beauty",
+  "Explore the Royal Heritage of India",
+  "Experience Incredible India",
+  "Create Memories That Last Forever",
+];
+
 const Hero = () => {
-  const phone = "917068261642";
+  const phone = "918218462981";
 
   // WhatsApp Default Message
   const defaultMessage =
@@ -30,6 +40,17 @@ const Hero = () => {
     const interval = setInterval(() => {
       setActiveImage((prev) => (prev + 1) % heroImages.length);
     }, 6000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Heading Slideshow
+  const [activeHeading, setActiveHeading] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveHeading((prev) => (prev + 1) % heroHeadings.length);
+    }, 5500);
 
     return () => clearInterval(interval);
   }, []);
@@ -60,24 +81,50 @@ const Hero = () => {
     >
       {/* Background Image Slideshow */}
       {heroImages.map((image, index) => (
-        <div
+        <motion.div
           key={image}
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage: `url('${image}')`,
+            pointerEvents: "none",
+          }}
+          initial={false}
+          animate={{
             opacity: index === activeImage ? 1 : 0,
-            transition: "opacity 1.2s ease-in-out",
-            animation:
-              index === activeImage ? "heroZoom 6s ease-out forwards" : "none",
+            scale: index === activeImage ? 1.08 : 1,
+          }}
+          transition={{
+            opacity: {
+              duration: 1.4,
+              ease: "easeInOut",
+            },
+            scale: {
+              duration: 6,
+              ease: "linear",
+            },
           }}
         />
       ))}
 
       {/* Background Overlay */}
-      <div className="absolute inset-0 z-1 bg-black/40" />
+      <div className="absolute inset-0 z-[1] bg-black/40" />
 
       {/* Hero Content */}
-      <div
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{
+          once: false,
+          amount: 0.15,
+        }}
+        variants={{
+          hidden: {},
+          visible: {
+            transition: {
+              staggerChildren: 0.16,
+            },
+          },
+        }}
         className="
           relative z-10
           mx-auto flex w-full
@@ -93,7 +140,23 @@ const Hero = () => {
         "
       >
         {/* Subtitle */}
-        <p
+        <motion.p
+          variants={{
+            hidden: {
+              opacity: 0,
+              y: 25,
+              filter: "blur(8px)",
+            },
+            visible: {
+              opacity: 1,
+              y: 0,
+              filter: "blur(0px)",
+            },
+          }}
+          transition={{
+            duration: 0.8,
+            ease: easePremium,
+          }}
           className="
             mb-5 flex w-full
             flex-wrap items-center
@@ -105,108 +168,170 @@ const Hero = () => {
           "
         >
           <span className="text-red-400">——</span>
-
           <span>Timeless Journeys, Tajvira Style</span>
-
           <span className="text-red-400">——</span>
-        </p>
+        </motion.p>
 
-        {/* Main Heading */}
-        <h1
-          className="
-            mx-auto w-full
-            max-w-362.5
-            text-center
-            font-serif font-bold
-            text-[clamp(2.2rem,5.2vw,5.25rem)]
-            leading-[1.12]
-            tracking-[-0.035em]
-            text-white
-            drop-shadow-lg
-            text-balance
-          "
-        >
-          {"Unveil the True Magic of India".split("").map((letter, index) => (
-            <motion.span
-              key={index}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{
-                delay: index * 0.055,
-                duration: 0.12,
-                ease: "easeOut",
-              }}
-              className="inline-block whitespace-pre"
-            >
-              {letter}
-            </motion.span>
-          ))}
-        </h1>
+        {/* Main Heading - Letter-by-letter Enter and Exit */}
+        <AnimatePresence mode="wait">
+          <motion.h1
+            key={activeHeading}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={{
+              hidden: {},
+              visible: {
+                transition: {
+                  staggerChildren: 0.045,
+                  delayChildren: 0.1,
+                },
+              },
+              exit: {
+                transition: {
+                  staggerChildren: 0.035,
+                  staggerDirection: -1,
+                },
+              },
+            }}
+            className="
+              mx-auto w-full
+              max-w-362.5
+              text-center
+              font-serif font-bold
+              text-[clamp(2.2rem,5.2vw,5.25rem)]
+              leading-[1.12]
+              tracking-[-0.035em]
+              text-white
+              drop-shadow-lg
+              text-balance
+              playfair-heading
+            "
+          >
+            {heroHeadings[activeHeading].split("").map((letter, index) => (
+              <motion.span
+                key={`${activeHeading}-${index}`}
+                variants={{
+                  hidden: {
+                    opacity: 0,
+                    y: 22,
+                    filter: "blur(6px)",
+                  },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    filter: "blur(0px)",
+                  },
+                  exit: {
+                    opacity: 0,
+                    y: -22,
+                    filter: "blur(6px)",
+                  },
+                }}
+                transition={{
+                  duration: 0.35,
+                  ease: easePremium,
+                }}
+                className="inline-block whitespace-pre"
+              >
+                {letter}
+              </motion.span>
+            ))}
+          </motion.h1>
+        </AnimatePresence>
 
         {/* Our Services Button */}
         <motion.a
           href="#services"
-          onMouseEnter={getButtonPosition}
-          className="
-            group relative isolate
-            mt-4 sm:mt-8
-            inline-flex
-            min-h-10 sm:min-h-13
-            min-w-30.25 sm:min-w-41.25
-            items-center justify-center
-            overflow-hidden
-            rounded-full
-            bg-[#df3044]
-            px-7 sm:px-10
-            py-3
-            text-sm sm:text-base
-            font-semibold
-            text-white
-            shadow-lg
-            transition-colors duration-300
-            hover:text-[#df3044]
-            focus-visible:outline-none
-            focus-visible:ring-2
-            focus-visible:ring-white
-          "
-          initial={{ opacity: 0, y: 35 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            delay: 1.9,
-            duration: 0.8,
-            ease: [0.22, 1, 0.36, 1],
+          onMouseMove={getButtonPosition}
+          variants={{
+            hidden: {
+              opacity: 0,
+              y: 35,
+              scale: 0.92,
+            },
+            visible: {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            },
           }}
+          transition={{
+            duration: 0.8,
+            delay: 0.2,
+            ease: easePremium,
+          }}
+          whileTap={{ scale: 0.97 }}
+          className="
+    group relative isolate
+    mt-4 sm:mt-8
+    inline-flex
+    min-h-10 sm:min-h-13
+    min-w-30.25 sm:min-w-41.25
+    items-center justify-center
+    overflow-hidden
+    rounded-full
+    bg-[#df3044]
+    px-7 sm:px-10
+    py-3
+    text-sm sm:text-base
+    font-semibold
+    text-white
+    shadow-lg
+    transition-colors duration-300
+    hover:text-[#df3044]
+    focus-visible:outline-none
+    focus-visible:ring-2
+    focus-visible:ring-white
+  "
         >
-          {/* Button Hover Animation */}
+          {/* Circular Hover Animation */}
           <span
             aria-hidden="true"
             className="
-              absolute inset-0 -z-10
-              scale-0 rounded-full
-              bg-white
-              transition-transform duration-500 ease-out
-              group-hover:scale-100
-            "
+      pointer-events-none absolute
+      h-4 w-4
+      -translate-x-1/2 -translate-y-1/2
+      scale-0
+      rounded-full
+      bg-white
+      transition-transform duration-700
+      ease-[cubic-bezier(0.22,1,0.36,1)]
+      group-hover:scale-[20]
+    "
             style={{
-              transformOrigin: `${buttonPosition.x}% ${buttonPosition.y}%`,
+              left: `${buttonPosition.x}%`,
+              top: `${buttonPosition.y}%`,
             }}
           />
 
+          {/* Button Text */}
           <span className="relative z-10 whitespace-nowrap">Our Services</span>
         </motion.a>
-      </div>
+      </motion.div>
 
       {/* Search Bar */}
       <motion.div
-        initial={{ opacity: 0, y: 70 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{
+          opacity: 0,
+          y: 70,
+          filter: "blur(8px)",
+        }}
+        whileInView={{
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+        }}
+        viewport={{
+          once: false,
+          amount: 0.2,
+        }}
         transition={{
-          delay: 2.85,
-          duration: 1.1,
-          ease: [0.22, 1, 0.36, 1],
+          duration: 1,
+          ease: easePremium,
         }}
         className="
-          absolute bottom-45 left-0
+          absolute bottom-40 left-0
           z-20 w-full px-5
           sm:bottom-12
           md:bottom-16
@@ -216,11 +341,23 @@ const Hero = () => {
       </motion.div>
 
       {/* WhatsApp Button */}
-      <a
+      <motion.a
         href={whatsappLink}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat on WhatsApp"
+        initial={{ opacity: 0, x: -35 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{
+          duration: 0.8,
+          delay: 1,
+          ease: easePremium,
+        }}
+        whileHover={{
+          scale: 1.06,
+          y: -3,
+        }}
+        whileTap={{ scale: 0.95 }}
         className="
           fixed bottom-6 left-6 z-50
           inline-flex h-13.5
@@ -232,7 +369,6 @@ const Hero = () => {
           text-white
           shadow-xl
           transition-transform duration-300
-          hover:scale-105
         "
       >
         {/* WhatsApp Icon */}
@@ -267,14 +403,26 @@ const Hero = () => {
         >
           WHATSAPP
         </span>
-      </a>
+      </motion.a>
 
       {/* Chat Button */}
-      <a
+      <motion.a
         href={whatsappLink}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Open chat"
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{
+          duration: 0.7,
+          delay: 1.2,
+          ease: easePremium,
+        }}
+        whileHover={{
+          scale: 1.12,
+          rotate: 8,
+        }}
+        whileTap={{ scale: 0.92 }}
         className="
           fixed bottom-6 right-6 z-50 m-5
           flex h-14 w-14
@@ -282,13 +430,13 @@ const Hero = () => {
           rounded-full
           bg-green-600
           text-white shadow-xl
-          transition hover:scale-110
+          transition
         "
       >
         <MessageCircleMore size={28} />
-      </a>
+      </motion.a>
     </section>
   );
-};
+};;
 
 export default Hero;
